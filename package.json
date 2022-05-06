@@ -1,0 +1,23 @@
+{
+  "name": "p2-seriel-call",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KamyaPA/P2-Seriel-Call.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KamyaPA/P2-Seriel-Call/issues"
+  },
+  "homepage": "https://github.com/KamyaPA/P2-Seriel-Call#readme",
+  "dependencies": {
+    "node-fetch": "^3.2.4"
+  }
+}
