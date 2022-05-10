@@ -2,21 +2,35 @@ import {call, callParalel} from './call.js';
 
 const server = "http://localhost:8080/graphql";
 
+function CallParameters(){
+
+}
+
+
 const callResults = [];
 function addResults(result){
 	callResults.push(result);
 }
 
-addResults(await callParalel([
-	call(server, "PokeAPI", "Pokemon", [{key : "pokemon", value : "squirtle"}], "{name=>name moves:[:{move:{name[=]moves}}]}"),
-]));
+addResults(await call(server, {
+			domain : "PokeAPI", 
+			endpoint : "Pokemon", 
+			argv : [{key : "pokemon", value :"charmander"}], 
+			filter : "{name=>name moves:[between 1..20:{move:{name[=]moves}}]}",
+	})
+);
 
-addResults(await callParalel(
-	callResults[0][0].moves.reduce((prev, cur) => {
-		prev.push(call(server, "PokeAPI", "Move", [{key : "move", value : cur}], "{name=>name accuracy=>acc power=>pow pp=>pp}"))
+let paralellObj = callResults[0].moves.reduce((prev, cur) => {
+		prev.push({
+			domain : "PokeAPI",
+			endpoint : "Move",
+			argv : [{key: "move", value : cur}],
+			filter : "{name=>name power=>pow pp=>pp accuracy=>acc}"
+		})
 		return prev
 	}, [])
-));
+
+addResults(await callParalel(server, paralellObj));
 
 console.log(callResults);
 

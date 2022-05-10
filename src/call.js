@@ -1,17 +1,25 @@
 import fetch from 'node-fetch';
 
-
 // calls the api server with a specific domain, filter and argumets 
-export async function call(server, domain, endpoint, argv, filter){
-	let argvStr = argv.reduce((prev, cur) => prev += '"' + cur.key + '=' + cur.value + '",', "")
-	return (await fetch(`${server}?query={call(api:"${domain}/${endpoint}",argv:[${argvStr}],filter:"${filter}")}`, {
+export async function call(server, {domain, endpoint, argv, filter} ){
+	let argvStr = argv.reduce((prev, cur) => prev += '"' + cur.key + '=' + cur.value + '",', "");
+	console.log(argvStr)
+	return (await makeQueryCall(`${server}?query={call(api:"${domain}/${endpoint}",argv:[${argvStr}],filter:"${filter}")}`)).data.call;
+}
+
+export async function callParalel(server, calls){
+	let callStr = `${server}?query={`;
+	await calls.forEach(({domain, endpoint, argv, filter}, index) => {
+		let argvStr = argv.reduce((prev, cur) => prev += '"' + cur.key + '=' + cur.value + '",', "");
+		callStr += `c${index}:call(api:"${domain}/${endpoint}",argv:[${argvStr}],filter:"${filter}") `
+	})
+	callStr += '}';
+	return Object.values((await makeQueryCall(callStr)).data);
+}
+
+async function makeQueryCall(callStr){
+	return await fetch(callStr, {
 		method : "GET"
-	}).then(res => res.json()).then(body => body)).data.call;
+	}).then(res => res.json());
 }
-
-export async function callParalel(calls){
-	return await Promise.all(calls);
-}
-
-
 
